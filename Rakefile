@@ -51,12 +51,18 @@ namespace :db do
     create_db
   end
 
+  # ++
+  desc "back database"
+  # ++
   task :backup do
     backup_db    
   end
 end
 
 namespace :lib do
+  # ++
+  desc "install needed gems and nodejs lib"
+  # ++
   task :install do
     install_gems
     install_nodejs_package
