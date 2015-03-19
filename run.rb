@@ -2,40 +2,19 @@ require 'active_record'
 require 'date'
 
 root = File.absolute_path("../", __FILE__)
+database_root = File.join(root, "db")
+
 Dir[File.join(root, "lib") + "/*"].each do |lib|
   require lib
 end
 
-# ++
-# creat table in database
-# ++
-def setup_news_table
-  ActiveRecord::Schema.define do
-    drop_table :news if table_exists? :users
-    create_table :news do |table|
-      table.column :title, :text
-      table.column :description, :text
-      table.column :guid, :text
-      table.column :pub_date, :date_time
-      table.column :link, :text
-      table.column :category, :text
-      table.column :picture, :text
-      table.column :le, :text
-      table.column :hao, :text
-      table.column :nu, :text
-      table.column :ai, :text
-      table.column :ju, :text
-      table.column :e, :text
-      table.column :jing, :text
-    end
+if File.exists?(database_root + "./news.db") 
+  raise "Exception: no news.db exist, please rake to create it first"
+else
+  ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => "#{database_root}/news.db")
+  if !ActiveRecord::Base.connection.table_exists?("news")
+    raise "Exception: no news table in news.db, please rake to create it first"
   end
-end
-
-root = File.absolute_path(__FILE__)
-database_root = File.join(File.dirname(root), "db")
-ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => File.join(database_root, "news.db"))
-if !ActiveRecord::Base.connection.table_exists? 'news'
-  setup_news_table
 end
 
 rss_list = JSON.parse(File.read('rss.json'))
@@ -64,9 +43,6 @@ rss_list = JSON.parse(File.read('rss.json'))
         end
       end
 
-      puts "---"
-      puts news
-      puts "---"
       news = News.new(title: news["title"], 
                       description: news["description"],
                       guid: news["guid"],
