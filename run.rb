@@ -58,7 +58,7 @@ rss_list = JSON.parse(File.read('rss.json'))
                       e: news['e'],
                       jing: news['jing'],
                      )
-      if news.save!
+      if news.save
         print "+"
       else
         puts "-"
