@@ -1,7 +1,7 @@
 require 'active_record'
 
-APP_ROOT = File.absolute_path('Gemfile')
-DB_ROOT = File.join(File.dirname(APP_ROOT), "db")
+APP_ROOT = File.dirname(File.absolute_path('Gemfile'))
+DB_ROOT = File.join(APP_ROOT, "db")
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3",
                                         :database => "#{DB_ROOT}/news.db")
 
@@ -43,6 +43,10 @@ def install_nodejs_package
   `npm install node-readability`
 end
 
+def init_emotion_map
+  puts `#{APP_ROOT}/emotion_map/xlsx_to_redis.rb`
+end
+
 namespace :db do
   # ++
   desc "create a database file and create a table named 'news'"
@@ -59,12 +63,12 @@ namespace :db do
   end
 end
 
-namespace :lib do
-  # ++
-  desc "install needed gems and nodejs lib"
-  # ++
-  task :install do
-    install_gems
-    install_nodejs_package
-  end
+# ++
+desc "setup envirement"
+# ++
+task :init do
+  install_gems
+  install_nodejs_package
+
+  init_emotion_map
 end

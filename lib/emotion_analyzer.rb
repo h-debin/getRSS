@@ -33,6 +33,9 @@ class EmotionAnalyzer
     '2' => '负面',
   }
 
+  
+  @@emotion_map = eval(Redis.new(:port => 4568).get("emotion:hash"))
+
   def self.on(word:nil, text:nil, file:nil, url:nil)
     if word
       analyze_on_word(word)
@@ -47,8 +50,7 @@ class EmotionAnalyzer
  
   private
   def self.analyze_on_word(word)
-    redis = Redis.new(:port => '4568')
-    ret_hash = to_hash(string: redis.get(word))
+    ret_hash = @@emotion_map[word]
     if ret_hash
       { 
         :category => CATEGORY_MAP[ret_hash["emotion_category"]],
@@ -62,7 +64,17 @@ class EmotionAnalyzer
   def self.analyze_on_text(text)
     words_emotion = []
     Tokenizer.tokenize(text:text).each do |word|
-      words_emotion << analyze_on_word(word)
+      ret_hash = @@emotion_map[word]
+      if ret_hash
+        result = { 
+          :category => CATEGORY_MAP[ret_hash["emotion_category"]],
+          :level => ret_hash["emotion_level"],
+          :type =>  TYPE[ret_hash["emotion_polarity"]],
+          :word => word,
+        }
+        words_emotion << result
+      end
+      #words_emotion << analyze_on_word(word)
     end
     final_judge(words_emotion.compact)
   end

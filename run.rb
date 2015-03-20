@@ -5,6 +5,7 @@ root = File.absolute_path("../", __FILE__)
 database_root = File.join(root, "db")
 
 Dir[File.join(root, "lib") + "/*"].each do |lib|
+  puts lib
   require lib
 end
 
@@ -17,10 +18,26 @@ else
   end
 end
 
+redis = Redis.new(:port => 4568)
+
 rss_list = JSON.parse(File.read('rss.json'))
 ["society", "technology", "sports", "entertainment", "uncategory"].each do |category|
   rss_list[category].each do |url|
     RSSParser.parse(url: url).each do |news|
+      if !redis.sismember('url:visited', news)
+        if redis.sadd('url:visited', news)
+          puts "saved to redis done"
+          redis.lpush('url:to_analyze', news)
+        else
+          puts "saved to redis failed"
+        end
+      else
+          puts "already in"
+      end
+    end
+  end
+end
+__END__
       emotions = EmotionAnalyzer.on(url: news["link"])
       emotions.each do |emotion|
         case emotion["key"]

@@ -1,7 +1,6 @@
 class RSSParser
   require "json"
   require "crack"
-  require 'open-uri'
   require "nokogiri"
   require "iconv"
 
