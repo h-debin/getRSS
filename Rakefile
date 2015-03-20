@@ -1,9 +1,4 @@
-require 'active_record'
-
-APP_ROOT = File.dirname(File.absolute_path('Gemfile'))
-DB_ROOT = File.join(APP_ROOT, "db")
-ActiveRecord::Base.establish_connection(:adapter => "sqlite3",
-                                        :database => "#{DB_ROOT}/news.db")
+require_relative 'config/environment'
 
 def create_db
   ActiveRecord::Schema.define do
@@ -47,6 +42,14 @@ def init_emotion_map
   puts `#{APP_ROOT}/emotion_map/xlsx_to_redis.rb`
 end
 
+def parse_rss
+  puts `#{BIN_ROOT}/parse_rss.rb`
+end
+
+def process_urls
+  puts `#{BIN_ROOT}/process_urls.rb`
+end
+
 namespace :db do
   # ++
   desc "create a database file and create a table named 'news'"
@@ -63,6 +66,18 @@ namespace :db do
   end
 end
 
+namespace :rss do
+  desc "parse items from rss"
+  task :parse do
+    parse_rss
+  end
+
+  desc "analyze items and save to sqlite3 db"
+  task :process do
+    process_urls
+  end
+end
+
 # ++
 desc "setup envirement"
 # ++
@@ -72,3 +87,4 @@ task :init do
 
   init_emotion_map
 end
+
