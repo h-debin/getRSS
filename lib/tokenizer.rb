@@ -21,6 +21,10 @@ class Tokenizer
     raise "Exception: no text given to Tokenizer" if text == nil
     
     clone = text.to_s.only_letters
-    `echo #{clone} | rmmseg`.force_encoding('UTF-8').split(' ')
+    begin
+      return `echo #{clone} | rmmseg`.force_encoding('UTF-8').split(' ')
+    rescue
+      return "" 
+    end
   end
 end

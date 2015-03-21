@@ -50,6 +50,33 @@ def process_urls
   puts `#{BIN_ROOT}/process_urls.rb`
 end
 
+def save_news
+  redis = Redis.new(:port => 4568) 
+  while redis.llen("news:processed") != 0
+    news = eval(redis.lpop("news:processed"))
+    news = News.new(title: news["title"], 
+                    description: news["description"],
+                    guid: news["guid"],
+                    pub_date: DateTime.parse(news["pubDate"]),
+                    link: news["link"],
+                    category: news["category"],
+                    picture: news["picture"],
+                    le: news['le'],
+                    hao: news['hao'],
+                    nu: news['nu'],
+                    ai: news['ai'],
+                    ju: news['ju'],
+                    e: news['e'],
+                    jing: news['jing'],
+                       )
+    if news.save
+      print "+"
+    else
+      print "-"
+    end
+  end
+end
+
 namespace :db do
   # ++
   desc "create a database file and create a table named 'news'"
@@ -66,15 +93,20 @@ namespace :db do
   end
 end
 
-namespace :rss do
+namespace :news do
   desc "parse items from rss"
-  task :parse do
+  task :parse_from_rss do
     parse_rss
   end
 
-  desc "analyze items and save to sqlite3 db"
-  task :process do
+  desc "analyze items and save to redis cache"
+  task :emotion_analyze do
     process_urls
+  end
+
+  desc "get news from redis cache and save to sqlite3 db"
+  task :save_to_db do
+    save_news
   end
 end
 
