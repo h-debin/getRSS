@@ -10,20 +10,22 @@ def create_db
       table.column :link, :text
       table.column :category, :text
       table.column :picture, :text
-      table.column :le, :text
-      table.column :hao, :text
-      table.column :nu, :text
-      table.column :ai, :text
-      table.column :ju, :text
-      table.column :e, :text
-      table.column :jing, :text
+      table.column :le, :integer
+      table.column :hao, :integer
+      table.column :nu, :integer
+      table.column :ai, :integer
+      table.column :ju, :integer
+      table.column :e, :integer
+      table.column :jing, :integer
+      table.column :emotion_type, :text
+      table.column :main_emotion_value, :text
     end
   end
 end
 
 def backup_db
   time = Time.now.strftime("%Y%m%d%H%M%S")
-  if system("mv #{DB_ROOT}/news.db #{DB_ROOT}/#{time}_news.db")
+  if system("mv #{DATABASE_ROOT}/news.db #{DATABASE_ROOT}/#{time}_news.db")
     puts "db backup done"
   else
     puts "db backup failed"
@@ -54,25 +56,31 @@ def save_news
   redis = Redis.new(:port => 4568) 
   while redis.llen("news:processed") != 0
     news = eval(redis.lpop("news:processed"))
-    news = News.new(title: news["title"], 
-                    description: news["description"],
-                    guid: news["guid"],
-                    pub_date: DateTime.parse(news["pubDate"]),
-                    link: news["link"],
-                    category: news["category"],
-                    picture: news["picture"],
-                    le: news['le'],
-                    hao: news['hao'],
-                    nu: news['nu'],
-                    ai: news['ai'],
-                    ju: news['ju'],
-                    e: news['e'],
-                    jing: news['jing'],
-                       )
-    if news.save
-      print "+"
-    else
-      print "-"
+    begin 
+      news = News.new(title: news["title"], 
+                      description: news["description"],
+                      guid: news["guid"],
+                      pub_date: DateTime.parse(news["pubDate"]),
+                      link: news["link"],
+                      category: news["category"],
+                      picture: news["picture"],
+                      emotion_type: news["emotion_type"],
+                      main_emotion_value: news["main_emotion_value"],
+                      le: news['le'].to_i,
+                      hao: news['hao'].to_i,
+                      nu: news['nu'].to_i,
+                      ai: news['ai'].to_i,
+                      ju: news['ju'].to_i,
+                      e: news['e'].to_i,
+                      jing: news['jing'].to_i,
+                         )
+      if news.save
+        print "+"
+      else
+        print "-"
+      end
+    rescue Exception => e
+      puts "Exception: news save failed since #{e.to_s}"
     end
   end
 end

@@ -3,6 +3,7 @@ class RSSParser
   require "crack"
   require "nokogiri"
   require "iconv"
+  require 'open-uri'
 
   def self.parse(url:)
     raise "Exceptino: no url given" if url == nil

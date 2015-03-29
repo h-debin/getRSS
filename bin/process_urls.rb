@@ -3,6 +3,12 @@
 require_relative '../config/environment'
 
 def set_emotion_attr(news, emotions)
+  if emotions.length > 0
+    main_emotion = emotions[0]
+    news["emotion_type"] = main_emotion["key"]
+    news["main_emotion_value"] = main_emotion["value"].to_i
+  end
+
   emotions.each do |emotion|
     case emotion["key"]
     when "好"
@@ -26,16 +32,37 @@ def set_emotion_attr(news, emotions)
   news
 end
 
+def get_image_from(url:)
+  ImageGetter.largest(url:url)
+end
+
 redis = Redis.new(:port => 4568)
 while redis.llen("url:to_analyze") != 0
   threads = []
-  1.times do
+  10.times do
     threads << Thread.new do
       news = eval(redis.lpop("url:to_analyze"))
+      # ++
+      # google news rss, item's link content google's suffix
+      # ++
+      news["link"] = news["link"].split("&url=")[1]
+      puts "news link" + news["link"]
+      
       emotions = EmotionAnalyzer.on(url: news["link"])
       news = set_emotion_attr(news, emotions)
-      redis.lpush("news:processed", news)
+
+      # ++
+      # only save the news with image to redis
+      # ++
+      images = get_image_from(url: news["link"])
+      if images != ""
+        news["picture"] = images
+        redis.lpush("news:processed", news)
+      else
+        puts images
+        puts "images nil #{news["link"]}"
+      end
     end
-    threads.each { |t| t.join }
   end
+  threads.each { |t| t.join }
 end

@@ -17,7 +17,7 @@ else
   ActiveRecord::Base.establish_connection(:adapter => "sqlite3", 
                                           :database => "#{DATABASE_ROOT}/news.db",
                                           :timeout => 10000)
-  if !ActiveRecord::Base.connection.table_exists?("news")
-    raise "Exception: no news table in news.db, please rake to create it first"
-  end
+  #if !ActiveRecord::Base.connection.table_exists?("news")
+  #  raise "Exception: no news table in news.db, please rake to create it first"
+  #end
 end
