@@ -118,6 +118,15 @@ namespace :news do
   end
 end
 
+namespace :flow do
+  desc "start whole flow"
+  task :start do
+    parse_rss
+    process_urls
+    save_news    
+  end
+end
+
 # ++
 desc "setup envirement"
 # ++
@@ -127,4 +136,3 @@ task :init do
 
   init_emotion_map
 end
-
