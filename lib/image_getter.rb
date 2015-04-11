@@ -6,7 +6,7 @@ class ImageGetter
   def self.on(url:)
     images = []
     begin
-      doc = Nokogiri::HTML(open(url))
+      doc = Nokogiri::HTML(open(url), nil, "UTF-8")
       doc.css("img").each do |img|
         images << img.attr("src")
       end
