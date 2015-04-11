@@ -24,7 +24,7 @@ class Tokenizer
     begin
       return `echo #{clone} | rmmseg`.force_encoding('UTF-8').split(' ')
     rescue
-      return "" 
+      return []
     end
   end
 end
