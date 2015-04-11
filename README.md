@@ -51,3 +51,11 @@ and the emerator has no length, need to
 ```
   rake -T # show what tasks suported
 ```
+
+
+### Step
+
+1. bundle install
+2. redis-server config
+3. emotion map,run save
+4. npm install node-readability
