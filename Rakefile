@@ -73,6 +73,8 @@ def save_news
                       ju: news['ju'].to_i,
                       e: news['e'].to_i,
                       jing: news['jing'].to_i,
+                      created_at: Time.now,
+                      updated_at: Time.now
                          )
       if news.save
         print "+"
