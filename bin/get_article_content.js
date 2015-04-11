@@ -10,8 +10,9 @@ var read = require('node-readability');
  
 read(url, function(err, article, meta) {
     if (err) {
-        console.log("Error: " + err);
-        process.exit(1);
+        //console.log("Error: " + err);
+        //process.exit(1);
+        console.log("");
     } else {
         console.log(article.content);
     }
