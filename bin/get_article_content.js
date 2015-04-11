@@ -8,27 +8,20 @@ if (process.argv.length >= 3) {
 }
 var read = require('node-readability');
  
-read(url, function(err, article, meta) {
-    if (err) {
-        //console.log("Error: " + err);
-        //process.exit(1);
-        console.log("");
-    } else {
-        console.log(article.content);
-    }
-  // Main Article 
-  //console.log(article.content);
-  // Title 
-  //console.log(article.title);
- 
-  // HTML Source Code 
-  //console.log(article.html);
-  // DOM 
-  //console.log(article.document);
- 
-  // Response Object from Request Lib 
-  //console.log(meta);
- 
-  // Close article to clean up jsdom and prevent leaks 
-  article.close();
-});
+try {
+    read(url, function(err, article, meta) {
+        if (err) {
+            //console.log("Error: " + err);
+            //process.exit(1);
+            console.log("");
+        } else {
+            console.log(article.content);
+            article.close();
+        }
+    });
+} catch(err) {
+
+} finally {
+    console.log("");
+}
+
