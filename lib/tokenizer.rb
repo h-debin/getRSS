@@ -20,7 +20,7 @@ class Tokenizer
   def self.tokenize(text:)
     raise "Exception: no text given to Tokenizer" if text == nil
     
-    clone = text.to_s.only_letters
+    clone = text.to_s.force_encoding('UTF-8').only_letters
     begin
       return `echo #{clone} | rmmseg`.force_encoding('UTF-8').split(' ')
     rescue
