@@ -15,7 +15,7 @@ class EmotionAnalyzer
     'NB' => '哀',
     'NJ' => '哀',
     'NH' => '哀',
-    'PE' => '哀',
+    'PL' => '哀',
     'NI' => '惧',
     'NC' => '惧',
     'NG' => '惧',
@@ -32,7 +32,6 @@ class EmotionAnalyzer
     '1' => '正面',
     '2' => '负面',
   }
-
   
   @@emotion_map = eval(Redis.new(:port => 4568).get("emotion:hash"))
 
