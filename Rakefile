@@ -55,15 +55,16 @@ def process_urls
 end
 
 def delete_old_news
-  News.where("created_at < ?", 2.days.ago).delete_all
+  today = Date.today
+  News.where("created_at < ?", today - 2).delete_all
 end
 
 def save_news
-  redis = Redis.new(:port => 4568) 
+  redis = Redis.new(:port => 4568)
   while redis.llen("news:processed") != 0
     news = eval(redis.lpop("news:processed"))
-    begin 
-      news = News.new(title: news["title"], 
+    begin
+      news = News.new(title: news["title"],
                       description: news["description"],
                       guid: news["guid"],
                       pub_date: DateTime.parse(news["pubDate"]),
@@ -105,7 +106,7 @@ namespace :db do
   desc "back database"
   # ++
   task :backup do
-    backup_db    
+    backup_db
   end
 end
 
@@ -124,6 +125,7 @@ namespace :news do
   task :save_to_db do
     save_news
   end
+
   desc "delete old news from news table"
   task :delete_old do
     delete_old_news
@@ -135,7 +137,7 @@ namespace :flow do
   task :start do
     parse_rss
     process_urls
-    save_news    
+    save_news
   end
 end
 
