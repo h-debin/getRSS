@@ -55,8 +55,7 @@ def process_urls
 end
 
 def delete_old_news
-  today = Date.today
-  News.where("created_at < ?", today - 2).each do |item|
+  News.where("created_at < ?", 2.days.ago).each do |item|
     if item.delete
       print '-'
     else
