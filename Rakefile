@@ -56,7 +56,13 @@ end
 
 def delete_old_news
   today = Date.today
-  News.where("created_at < ?", today - 2).delete_all
+  News.where("created_at < ?", today - 2).each do |item|
+    if item.delete
+      print '-'
+    else
+      puts "Cannot delete #{item}"
+    end
+  end
 end
 
 def save_news
