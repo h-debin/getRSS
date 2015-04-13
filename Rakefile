@@ -55,11 +55,7 @@ def process_urls
 end
 
 def delete_old_news
-  twoday = 2 * 24 * 60 * 60
-  now = Time.now
-  array = News.where("created_at < ?", now - twoday)
-  puts array.count
-  array.delete_all
+  News.where("created_at < ?", 2.days.ago).delete_all
 end
 
 def save_news
