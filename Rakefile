@@ -19,6 +19,8 @@ def create_db
       table.column :jing, :integer
       table.column :emotion_type, :text
       table.column :main_emotion_value, :text
+      table.column :created_at, :Time
+      table.column :updated_at, :Time
     end
   end
 end
@@ -50,6 +52,25 @@ end
 
 def process_urls
   puts `#{BIN_ROOT}/process_urls.rb`
+end
+
+def delete_old_news
+  twoday = 2 * 24 * 60 * 60
+  now = Time.now
+  array = News.where("created_at < ?", now - twoday)
+  puts array.count
+  array.delete_all
+end
+def take_news
+  array = News.take
+  # array = News.select("title, created_at, updated_at").where("created_at < ?", now)
+  array.each do |e|
+    puts e.title
+    t0 = e.created_at_before_type_cast
+    puts t0
+    puts t0.class
+    puts Time.parse(t0)
+  end
 end
 
 def save_news
@@ -117,6 +138,14 @@ namespace :news do
   desc "get news from redis cache and save to sqlite3 db"
   task :save_to_db do
     save_news
+  end
+  desc "get 1 row in news table"
+  task :take do
+    take_news
+  end
+  desc "delete old news from news table"
+  task :delete_old do
+    delete_old_news
   end
 end
 
