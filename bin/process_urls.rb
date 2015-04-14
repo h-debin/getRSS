@@ -39,7 +39,7 @@ end
 redis = Redis.new(:port => 4568)
 while redis.llen("url:to_analyze") != 0
   threads = []
-  1.times do
+  10.times do
     threads << Thread.new do
       news = eval(redis.lpop("url:to_analyze"))
       # ++
@@ -55,7 +55,7 @@ while redis.llen("url:to_analyze") != 0
       # only save the news with image to redis
       # ++
       images = get_image_from(url: news["link"])
-      if images != ""
+      if (images != "") && (images.include?"http")
         news["picture"] = images
         redis.lpush("news:processed", news)
       else
