@@ -55,7 +55,7 @@ while redis.llen("url:to_analyze") != 0
       # only save the news with image to redis
       # ++
       images = get_image_from(url: news["link"])
-      if (images != "") && (images.include?"http")
+      if (images != "") && (images[0..3] == "http")
         news["picture"] = images
         redis.lpush("news:processed", news)
       else
