@@ -39,7 +39,7 @@ end
 redis = Redis.new(:port => 4568)
 while redis.llen("url:to_analyze") != 0
   threads = []
-  10.times do
+  1.times do
     threads << Thread.new do
       news = eval(redis.lpop("url:to_analyze"))
       # ++
